@@ -1,27 +1,22 @@
-const width = 100;
-const heigth = 100;
+const width = 1000;
+const heigth = 1000;
 const squareSize = 5;
 
 let ctx, canvas, state;
 
-async function init() {
+ function init() {
     canvas = document.getElementById("game");
     ctx = canvas.getContext("2d");
     canvas.style.border = "1px solid black";
     state = generateRandomMatrix();
-
-
-    await draw();
     
-    await updateScreen();
 
-    await draw();
+     window.requestAnimationFrame(draw);
    
 }
 
-async function draw() {
-    console.log(state);
-    
+ function draw() {
+   updateScreen();
     ctx.clearRect(0, 0, width, heigth);
 
     for (let i = 0; i < width / squareSize; i++) {
@@ -32,6 +27,8 @@ async function draw() {
         }
     }
 
+     window.requestAnimationFrame(draw);
+   
 }
 
 function generateRandomMatrix() {
@@ -40,16 +37,17 @@ function generateRandomMatrix() {
     for (let i = 0; i < width / squareSize; i++) {
         matrix[i] = []
         for (let j = 0; j < width / squareSize; j++) {
-            let r = (Math.random() * 10) > 8;
+            let r = (Math.random() * 10) > 9;
             matrix[i][j] = r;
         }
     }
     return matrix;
 }
 
-async function updateScreen() {
+ function updateScreen() {
 
     let newState = [];
+
     for(let i=0; i<heigth/squareSize; i++)
         newState.push(new Array(heigth/squareSize));
 
@@ -59,32 +57,32 @@ async function updateScreen() {
             newState[i][j] = n;
         }
     }
-
+    
     state=newState;
 }
 
 function updateStatus(statusCenter, xCenter, yCenter) {
-
     let x = xCenter === 0 ? xCenter : xCenter - 1;
     let y = yCenter === 0 ? yCenter : yCenter - 1;
-    let live = 0;
-    let total =0;
-    for (let i = x; ((i < width / squareSize) && (i < 3)); i++)
-        for (let j = y; ((j < heigth / squareSize) && (j < 3)); j++) {
-            total++;
+    
+    let alive = 0;
+    
+    for (let i = x, ii=0; ((i < width / squareSize) && (ii < 3)); i++, ii++)
+        for (let j = y, jj=0; ((j < heigth / squareSize) && (jj < 3)); j++, jj++) {
             if(i === xCenter && j===yCenter) continue;
             
-            if(state[i][j])live++;
+            if(state[i][j])alive++;
         }
-    console.log(state.length,total)
+    
+    
     //it's dead
-    if(!statusCenter)return live === 3? true:false;
-    else{
-        if (live < 2){
+    if(!statusCenter)return alive === 3? true:false;
 
-            return false
+    else{
+        if (alive < 2){
+            return false;
         }
-        else if (live > 3 ){
+        else if (alive > 3 ){
             return false;
         }
 
